@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Link State Routing Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      color: #2E3A87;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    input,
+    button {
+      padding: 8px;
+      margin-right: 5px;
+    }
+
+    #graph {
+      margin-top: 20px;
+      border: 2px solid #2E3A87;
+      border-radius: 8px;
+      padding: 15px;
+      width: 60%;
+      background-color: #F0F4FF;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Link State Routing Visualization</h1>
+
+  <form action="/add_router" method="POST">
+    Router Name: <input type="text" name="router" required>
+    <button type="submit">Add Router</button>
+  </form>
+
+  <form action="/remove_router" method="POST">
+    Router Name: <input type="text" name="router" required>
+    <button type="submit">Remove Router</button>
+  </form>
+
+  <form action="/add_link" method="POST">
+    Source Router: <input type="text" name="src" required>
+    Destination Router: <input type="text" name="dest" required>
+    Cost: <input type="number" name="cost" required>
+    <button type="submit">Add Link</button>
+  </form>
+
+  <form action="/modify_link" method="POST">
+    Source Router: <input type="text" name="src" required>
+    Destination Router: <input type="text" name="dest" required>
+    New Cost: <input type="number" name="new_cost" required>
+    <button type="submit">Modify Link</button>
+  </form>
+
+  <form method="POST" action="/remove_link">
+    <label for="src">Source Router:</label>
+    <input type="text" id="src" name="src" required>
+
+    <label for="dest">Destination Router:</label>
+    <input type="text" id="dest" name="dest" required>
+
+    <button type="submit">Remove Link</button>
+  </form>
+
+
+  <form action="/dijkstra" method="POST">
+    Source Router: <input type="text" name="source" required>
+    <button type="submit">Find Shortest Paths</button>
+  </form>
+
+  <div id="graph">
+    {% if graph_image %}
+    <img src="data:image/png;base64,{{ graph_image }}" alt="Graph Visualization">
+    {% else %}
+    <p>No graph to display yet. Add routers and links first.</p>
+    {% endif %}
+  </div>
+</body>
+
+</html>
