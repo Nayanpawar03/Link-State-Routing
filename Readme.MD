@@ -37,34 +37,33 @@ Follow these steps to set up the project in a **virtual environment**:
 ```bash
 git clone https://github.com/Nayanpawar03/Link-State-Routing.git
 cd Link-State-Routing
-2️⃣ Create a Virtual Environment
-bash
-Copy
-Edit
+```
+### 2️⃣ **Create a Virtual Environment**
+```bash
 python -m venv venv
-3️⃣ Activate the Virtual Environment
-Windows
-
-bash
-Copy
-Edit
+```
+### 3️⃣ **Activate the Virtual Environment**
+```bash
 venv\Scripts\activate
-Mac/Linux
-
-bash
-Copy
-Edit
-source venv/bin/activate
-4️⃣ Install Dependencies
-bash
-Copy
-Edit
+```
+### 4️⃣**Install Dependencies**
+```bash
 pip install -r requirements.txt
-5️⃣ Run the Application
-bash
-Copy
-Edit
+```
+### 5️⃣**Run the Application**
+```bash
 python app.py
-6️⃣ Access the Application
-Go to: http://localhost:5000
+```
+🖥️ How to Use
+Add Router – Enter the router name and click "Add".
 
+Add Link – Specify two routers and enter the link cost.
+
+Modify Link Cost – Enter new cost values to update links.
+
+Remove Router/Link – Instantly deletes the router or link from the graph.
+
+Shortest Path Calculation – Enter a source router to calculate optimal paths.
+
+🤝 Contributing
+Contributions are welcome! If you'd like to improve the project, feel free to fork the repository and submit a pull request.
