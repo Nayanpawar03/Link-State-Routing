@@ -18,14 +18,6 @@ This project is a **Link-State Routing Algorithm** implementation using **Flask*
 - **HTML/CSS** (For the frontend interface)
 - **JavaScript** (AJAX for dynamic updates)
 
----
-
-
-yaml
-Copy
-Edit
-
----
 
 ## ⚙️ Installation & Setup
 
