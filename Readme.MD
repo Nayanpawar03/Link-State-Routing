@@ -20,8 +20,6 @@ This project is a **Link-State Routing Algorithm** implementation using **Flask*
 
 ---
 
-## 📂 Folder Structure
-📁 CN_Miniproject ┣ 📂 templates ┃ ┗ 📄 index.html ┣ 📄 app.py ┣ 📄 requirements.txt ┗ 📄 README.md
 
 yaml
 Copy
