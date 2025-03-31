@@ -1,89 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <title>Link State Routing Visualization</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/vis-network.min.js"></script>
+  <script>
+    
+  document.addEventListener("DOMContentLoaded", async function () {
+    try {
+      // Fetch routers and links from your Flask/Node.js backend
+      let response = await fetch("/get_network_data");
+      let data = await response.json();
 
-    h1 {
-      color: #2E3A87;
-    }
+      // Convert routers into Vis.js nodes with router icons
+      let nodes = new vis.DataSet(
+        data.routers.map((router) => ({
+          id: router.id,
+          label: router.name,
+          shape: "image",
+          image: "router-icon.png", // Replace with your actual router image
+        }))
+      );
 
-    form {
-      margin-bottom: 20px;
-    }
+      // Convert links into Vis.js edges with costs
+      let edges = new vis.DataSet(
+        data.links.map((link) => ({
+          from: link.source,
+          to: link.destination,
+          label: String(link.cost),
+          color: { color: "blue" }, // Adjust colors based on cost
+          width: 2 + link.cost / 5, // Thicker lines for higher cost
+        }))
+      );
 
-    input,
-    button {
-      padding: 8px;
-      margin-right: 5px;
-    }
+      var container = document.getElementById("network");
+      var graphData = { nodes: nodes, edges: edges };
+      var options = {
+        edges: { arrows: "to", font: { align: "top" }, smooth: true },
+        nodes: { size: 30, font: { size: 14, color: "#000" } },
+        physics: { stabilization: false },
+      };
 
-    #graph {
-      margin-top: 20px;
-      border: 2px solid #2E3A87;
-      border-radius: 8px;
-      padding: 15px;
-      width: 60%;
-      background-color: #F0F4FF;
+      new vis.Network(container, graphData, options);
+    } catch (error) {
+      console.error("Error fetching network data:", error);
     }
-  </style>
+  });
+
+
+  </script>
+
 </head>
 
-<body>
-  <h1>Link State Routing Visualization</h1>
+<body class="bg-gradient-to-r from-blue-50 to-blue-200 p-10">
+  <div class="flex gap-10">
+    <!-- Left Section (Forms) -->
+    <div class="w-1/4 bg-white p-3 shadow-lg rounded-lg space-y-2">
+      <h1 class="text-lg font-bold text-blue-800 mb-2">Link State Routing</h1>
+    
+      <form action="/add_router" method="POST" class="space-y-1">
+        <label class="block text-gray-600 text-sm">Router Name:</label>
+        <input type="text" name="router" required class="w-full p-1 border rounded text-sm">
+        <button type="submit" class="w-full bg-blue-600 text-white py-1 rounded text-sm">Add Router</button>
+      </form>
+    
+      <form action="/remove_router" method="POST" class="space-y-1">
+        <label class="block text-gray-600 text-sm">Router Name:</label>
+        <input type="text" name="router" required class="w-full p-1 border rounded text-sm">
+        <button type="submit" class="w-full bg-red-600 text-white py-1 rounded text-sm">Remove Router</button>
+      </form>
+    
+      <form action="/add_link" method="POST" class="space-y-1">
+        <label class="block text-gray-600 text-sm">Source Router:</label>
+        <input type="text" name="src" required class="w-full p-1 border rounded text-sm">
+        <label class="block text-gray-600 text-sm">Destination Router:</label>
+        <input type="text" name="dest" required class="w-full p-1 border rounded text-sm">
+        <label class="block text-gray-600 text-sm">Cost:</label>
+        <input type="number" name="cost" required class="w-full p-1 border rounded text-sm">
+        <button type="submit" class="w-full bg-green-600 text-white py-1 rounded text-sm">Add Link</button>
+      </form>
+    
+      <form action="/modify_link" method="POST" class="space-y-1">
+        <label class="block text-gray-600 text-sm">Source Router:</label>
+        <input type="text" name="src" required class="w-full p-1 border rounded text-sm">
+        <label class="block text-gray-600 text-sm">Destination Router:</label>
+        <input type="text" name="dest" required class="w-full p-1 border rounded text-sm">
+        <label class="block text-gray-600 text-sm">New Cost:</label>
+        <input type="number" name="new_cost" required class="w-full p-1 border rounded text-sm">
+        <button type="submit" class="w-full bg-yellow-500 text-white py-1 rounded text-sm">Modify Link</button>
+      </form>
+    
+      <form action="/remove_link" method="POST" class="space-y-1">
+        <label class="block text-gray-600 text-sm">Source Router:</label>
+        <input type="text" name="src" required class="w-full p-1 border rounded text-sm">
+        <label class="block text-gray-600 text-sm">Destination Router:</label>
+        <input type="text" name="dest" required class="w-full p-1 border rounded text-sm">
+        <button type="submit" class="w-full bg-red-500 text-white py-1 rounded text-sm">Remove Link</button>
+      </form>
+    
+      <form action="/dijkstra" method="POST" class="space-y-1">
+        <label class="block text-gray-600 text-sm">Source Router:</label>
+        <input type="text" name="source" required class="w-full p-1 border rounded text-sm">
+        <button type="submit" class="w-full bg-purple-600 text-white py-1 rounded text-sm">Find Shortest Paths</button>
+      </form>
+    </div>
+    
 
-  <form action="/add_router" method="POST">
-    Router Name: <input type="text" name="router" required>
-    <button type="submit">Add Router</button>
-  </form>
-
-  <form action="/remove_router" method="POST">
-    Router Name: <input type="text" name="router" required>
-    <button type="submit">Remove Router</button>
-  </form>
-
-  <form action="/add_link" method="POST">
-    Source Router: <input type="text" name="src" required>
-    Destination Router: <input type="text" name="dest" required>
-    Cost: <input type="number" name="cost" required>
-    <button type="submit">Add Link</button>
-  </form>
-
-  <form action="/modify_link" method="POST">
-    Source Router: <input type="text" name="src" required>
-    Destination Router: <input type="text" name="dest" required>
-    New Cost: <input type="number" name="new_cost" required>
-    <button type="submit">Modify Link</button>
-  </form>
-
-  <form method="POST" action="/remove_link">
-    <label for="src">Source Router:</label>
-    <input type="text" id="src" name="src" required>
-
-    <label for="dest">Destination Router:</label>
-    <input type="text" id="dest" name="dest" required>
-
-    <button type="submit">Remove Link</button>
-  </form>
+<!-- Right Section (Graph) -->
+<div class="flex-1 bg-white p-6 shadow-lg rounded-lg flex items-center justify-center border border-gray-300">
+  {% if graph_image %}
+  <img src="data:image/png;base64,{{ graph_image }}" alt="Graph Visualization" class="max-w-full rounded-lg shadow-md border border-gray-400">
+  {% else %}
+  <p class="text-gray-600 text-lg font-semibold">No graph to display yet. Add routers and links first.</p>
+  {% endif %}
+</div>
 
 
-  <form action="/dijkstra" method="POST">
-    Source Router: <input type="text" name="source" required>
-    <button type="submit">Find Shortest Paths</button>
-  </form>
-
-  <div id="graph">
-    {% if graph_image %}
-    <img src="data:image/png;base64,{{ graph_image }}" alt="Graph Visualization">
-    {% else %}
-    <p>No graph to display yet. Add routers and links first.</p>
-    {% endif %}
-  </div>
 </body>
 
 </html>
