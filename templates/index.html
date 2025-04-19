@@ -6,51 +6,72 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/vis-network.min.js"></script>
   <script>
-    
-  document.addEventListener("DOMContentLoaded", async function () {
-    try {
-      // Fetch routers and links from your Flask/Node.js backend
-      let response = await fetch("/get_network_data");
-      let data = await response.json();
-
-      // Convert routers into Vis.js nodes with router icons
-      let nodes = new vis.DataSet(
-        data.routers.map((router) => ({
-          id: router.id,
-          label: router.name,
-          shape: "image",
-          image: "router-icon.png", // Replace with your actual router image
-        }))
-      );
-
-      // Convert links into Vis.js edges with costs
-      let edges = new vis.DataSet(
-        data.links.map((link) => ({
-          from: link.source,
-          to: link.destination,
-          label: String(link.cost),
-          color: { color: "blue" }, // Adjust colors based on cost
-          width: 2 + link.cost / 5, // Thicker lines for higher cost
-        }))
-      );
-
-      var container = document.getElementById("network");
-      var graphData = { nodes: nodes, edges: edges };
-      var options = {
-        edges: { arrows: "to", font: { align: "top" }, smooth: true },
-        nodes: { size: 30, font: { size: 14, color: "#000" } },
-        physics: { stabilization: false },
-      };
-
-      new vis.Network(container, graphData, options);
-    } catch (error) {
-      console.error("Error fetching network data:", error);
-    }
-  });
-
-
+    document.addEventListener("DOMContentLoaded", async function () {
+      try {
+        // Fetch routers and links from your Flask backend
+        let response = await fetch("/get_network_data");
+        let data = await response.json();
+  
+        // Convert routers into Vis.js nodes with router icons
+        let nodes = new vis.DataSet(
+          data.routers.map((router) => ({
+            id: router.id,
+            label: router.name,
+            shape: "image",
+            image: "static/wifi.png", // Ensure this path is correct for your router icon
+            size: 30,
+            labelHighlightBold: false,
+            font: {
+              size: 14,
+              color: "#333",
+              vadjust: 40 // Pushes label below the image
+            }
+          }))
+        );
+  
+        // Convert links into Vis.js edges with costs
+        let edges = new vis.DataSet(
+          data.links.map((link) => ({
+            from: link.source,
+            to: link.destination,
+            label: String(link.cost),
+            color: { color: "blue" }, // Adjust colors based on cost
+            width: 2 + link.cost / 5, // Thicker lines for higher cost
+          }))
+        );
+  
+        var container = document.getElementById("network");
+        var graphData = { nodes: nodes, edges: edges };
+        
+        var options = {
+          edges: {
+            arrows: "to",
+            font: { align: "top" },
+            smooth: true
+          },
+          nodes: {
+            size: 30,
+            font: { size: 14, color: "#000" },
+            shape: "image", // Ensure nodes are images, not circles or other shapes
+            image: "static/wifi.png", // Update to your router icon image path
+            physics: true // Enable physics for movement
+          },
+          physics: {
+            stabilization: false // Disable automatic stabilization (optional)
+          },
+          manipulation: {
+            enabled: true, // Enable manipulation of nodes (dragging)
+            initiallyActive: true // Allow initial active dragging
+          }
+        };
+  
+        new vis.Network(container, graphData, options);
+      } catch (error) {
+        console.error("Error fetching network data:", error);
+      }
+    });
   </script>
-
+  
 </head>
 
 <body class="bg-gradient-to-r from-blue-50 to-blue-200 p-10">
@@ -105,18 +126,16 @@
         <button type="submit" class="w-full bg-purple-600 text-white py-1 rounded text-sm">Find Shortest Paths</button>
       </form>
     </div>
-    
 
-<!-- Right Section (Graph) -->
-<div class="flex-1 bg-white p-6 shadow-lg rounded-lg flex items-center justify-center border border-gray-300">
-  {% if graph_image %}
-  <img src="data:image/png;base64,{{ graph_image }}" alt="Graph Visualization" class="max-w-full rounded-lg shadow-md border border-gray-400">
-  {% else %}
-  <p class="text-gray-600 text-lg font-semibold">No graph to display yet. Add routers and links first.</p>
-  {% endif %}
-</div>
-
-
+    <!-- Right Section (Graph) -->
+    <div class="flex-1 bg-white p-6 shadow-lg rounded-lg flex items-center justify-center border border-gray-300">
+      {% if graph_image %}
+      <img src="data:image/png;base64,{{ graph_image }}" alt="Graph Visualization" class="max-w-full rounded-lg shadow-md border border-gray-400">
+      {% else %}
+      <p class="text-gray-600 text-lg font-semibold">No graph to display yet. Add routers and links first.</p>
+      {% endif %}
+    </div>
+  </div>
 </body>
 
 </html>
